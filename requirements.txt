@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+sqlmodel
+pydantic
+python-multipart
+transformers
+langchain
+speechrecognition
+gtts
+google-api-python-client
+pydantic[email]
+google-generativeai
+PyPDF2
+python-dotenv
+langchain-google-genai

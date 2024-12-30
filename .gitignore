@@ -1,0 +1,19 @@
+# Ignore the .env file
+.env
+
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv/
+
+# VS Code settings folder
+.vscode/
+
+# macOS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
