@@ -130,3 +130,16 @@ def save_quiz(
     db.commit()
     db.refresh(db_quiz)
     return {"message": "Quiz saved successfully", "quiz_id": db_quiz.id}
+
+@router.get("/{user_id}")
+def get_quizzes_by_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+):
+    # Query quizzes by user_id
+    quizzes = db.query(Quiz).filter(Quiz.user_id == user_id).all()
+
+    if not quizzes:
+        raise HTTPException(status_code=404, detail="No quizzes found for the given user ID")
+
+    return {"quizzes": quizzes}
