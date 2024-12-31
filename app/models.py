@@ -16,4 +16,3 @@ class QuizModel(BaseModel):
     content: Any  # Storing quiz questions and answers (JSON compatible)
     user_id: int  # User who generated the quiz
     score: Optional[float]  # Optional score
-    date_time: datetime  # Timestamp for quiz creation
