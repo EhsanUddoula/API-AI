@@ -12,6 +12,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from .. import models
 from ..database import get_db
+from ..tables import Quiz
 
 # Api part starts from here
 
