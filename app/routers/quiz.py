@@ -121,10 +121,10 @@ def save_quiz(
     db: Session = Depends(get_db),
 ):
     db_quiz = Quiz(
-        topic=quiz_data.get("topic"),
-        content=quiz_data.get("content"),
-        user_id=user.id,
-        score=quiz_data.get("score"),
+        topic=quiz_data.topic,
+        content=quiz_data.content,
+        user_id=quiz_data.user_id,
+        score=quiz_data.score,
     )
     db.add(db_quiz)
     db.commit()

@@ -7,7 +7,7 @@ from enum import Enum as PyEnum
 Base = declarative_base()
 
 # Enum class for User roles
-class Role(PyEnum):
+class Role(PyEnum): 
     STUDENT = "student"
     TEACHER = "teacher"
 
@@ -29,21 +29,21 @@ class User(Base):
     role: Mapped[Role] = mapped_column(Enum(Role), nullable=False)
 
     # Relationship with Quiz
-    quizzes = relationship("Quiz", back_populates="user")
+    quizzes = relationship("Quiz", back_populates="user", cascade="all, delete",passive_deletes=True,)
 
 class Quiz(Base):
     __tablename__ = "quizzes"
 
     # Primary key
-    id = Column(Integer, primary_key=True, index=True)
+    id = mapped_column(Integer, primary_key=True, index=True)
 
     # Optional topic
-    topic = Column(String, nullable=True)
+    topic = mapped_column(String, nullable=True)
 
     # Store quiz questions and answers
-    content = Column(JSON, nullable=False)
-    user_id = Column(Integer, ForeignKey("users_table.id"), nullable=False)
-    score = Column(Float, nullable=True)
-    date_time = Column(DateTime, default=datetime.utcnow)
+    content = mapped_column(JSON, nullable=False)
+    user_id = mapped_column(Integer, ForeignKey("users_table.id",ondelete="CASCADE"), nullable=False)
+    score = mapped_column(Float, nullable=True)
+    date_time = mapped_column(DateTime, default=datetime.utcnow)
 
-    user = relationship("User", back_populates="quizzes")
+    user = relationship("User", back_populates="quizzes") 
