@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from .. import models,tables,utils,oauth2
 from sqlalchemy.exc import IntegrityError
+from fastapi.security import OAuth2PasswordBearer
+from typing import Annotated
 
 router= APIRouter(
     prefix="/auth",
@@ -10,7 +12,7 @@ router= APIRouter(
 )
 
 @router.post("/register")
-def post_user(user : models.UserModel, db: Session = Depends(get_db)):
+def post_user(user : Annotated[models.UserModel, Form()], db: Session = Depends(get_db)):
     hashed_password= utils.hash(user.password)
     user.password= hashed_password
     # Create a new user instance
@@ -50,4 +52,3 @@ def login(user: models.LoginModel, db: Session = Depends(get_db)):
     }
     access_token = oauth2.create_access_token(data=token_data)
     return {"access_token": access_token}
-    

@@ -16,7 +16,6 @@ class UserModel(BaseModel):
 class QuizModel(BaseModel):
     topic: Optional[str]  # Optional topic
     content: Any  # Storing quiz questions and answers (JSON compatible)
-    user_id: int  # User who generated the quiz
     score: Optional[float]  # Optional score
 
     class config:

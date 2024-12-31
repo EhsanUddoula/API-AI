@@ -4,6 +4,8 @@ from ..database import get_db,create_db_and_tables
 from ..models import UserModel,UserModelOut
 from ..tables import User
 from typing import List, Optional
+from ..oauth2 import get_current_user
+from .. import utils
 
 
 router= APIRouter(
@@ -55,3 +57,38 @@ def get_user_by_id_or_email(
         raise HTTPException(status_code=404, detail="User not found")
 
     return db_user
+
+
+@router.put("/update/{user_id}")
+def update_user(
+    user_id: int,
+    user_data: UserModel,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    # Ensure the current user can only update their own profile
+    if current_user["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="You can only update your own profile")
+
+    # Query the user to update
+    db_user = db.query(User).filter(User.id == user_id).first()
+
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Update user fields if provided
+    if user_data.name:
+        db_user.name = user_data.name
+    if user_data.email:
+        db_user.email = user_data.email
+    if user_data.password:
+        db_user.password = utils.hash(user_data.password)
+
+    try:
+        # Commit the changes
+        db.commit()
+        db.refresh(db_user)
+        return {"message": "Profile updated successfully", "user": db_user}
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Email already exists")
