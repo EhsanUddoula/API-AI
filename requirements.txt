@@ -14,8 +14,11 @@ google-generativeai
 PyPDF2
 python-dotenv
 langchain-google-genai
+langchain_google_vertexai
 passlib[bcrypt]
 python-jose
 pyjwt
 pytesseract 
 pillow
+faiss-cpu
+langchain-community
