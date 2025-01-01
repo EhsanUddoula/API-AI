@@ -90,7 +90,7 @@ def get_chat_history(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    user_id = current_user["id"]
+    user_id = current_user["user_id"]
 
     # Query all chats for the user
     chats = db.query(Chat).filter(Chat.user_id == user_id).order_by(Chat.timestamp).all()
