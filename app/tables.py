@@ -32,6 +32,7 @@ class User(Base):
     quizzes = relationship("Quiz", back_populates="user", cascade="all, delete",passive_deletes=True,)
     summaries= relationship("Summary", back_populates="user", cascade="all, delete",passive_deletes=True,)
     notes= relationship("Notes", back_populates="user", cascade="all, delete",passive_deletes=True,)
+    chat= relationship("Chat", back_populates="user", cascade="all, delete",passive_deletes=True,)
 
 class Quiz(Base):
     __tablename__ = "quizzes"
@@ -71,3 +72,15 @@ class Notes(Base):
 
     # Relationship with the User table (optional, depending on ORM usage)
     user = relationship("User", back_populates="notes")
+
+
+class Chat(Base):
+    __tablename__= "chat"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users_table.id", ondelete="CASCADE"), nullable=False)
+    message = Column(String, nullable = False)  # The user's message
+    response = Column(String, nullable = False) # The chatbot's response
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="chat")
