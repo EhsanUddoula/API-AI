@@ -143,6 +143,8 @@ def save_quiz(
 def get_quizzes_by_user(
     user_id: int,
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+
 ):
     if current_user["role"] != "student":
         raise HTTPException(
