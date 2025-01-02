@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .database import get_db,create_db_and_tables
-from .routers import users,quiz,auth,summary,translate,notes,chat,qna
+from .routers import users,quiz,auth,summary,translate,notes,chat,qna,imageAnalysis
 
 from fastapi.middleware.cors import CORSMiddleware 
 
@@ -9,10 +9,11 @@ app.include_router(users.router)
 app.include_router(quiz.router)
 app.include_router(auth.router)
 app.include_router(summary.router)
-app.include_router(translate.router)
+app.include_router(translate.router) 
 app.include_router(notes.router)
 app.include_router(chat.router)
 app.include_router(qna.router)
+app.include_router(imageAnalysis.router)
 
 def configure_cors(app): 
     origins = [ 

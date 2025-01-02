@@ -17,6 +17,9 @@ from ..oauth2 import get_current_user
 from PIL import Image
 import pytesseract
 from io import BytesIO
+import openai
+import base64
+from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
 # Api part starts from here
 
@@ -24,8 +27,10 @@ env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
 GEMINI_API_KEY = os.getenv("GOOGLE_GEMINI_API_KEY")
+OPENAI_API_KEY= os.getenv("OPEN_AI_API_KEY")
 # genai.configure(api_key=GEMINI_API_KEY) 
 # model = genai.GenerativeModel("gemini-1.5-flash")
+# nltk.download('vader_lexicon')
 
 router=APIRouter(
     prefix="/summary",
@@ -160,7 +165,7 @@ def delete_summary(
 
     return {"message": "Summary deleted successfully"}
 
-@router.post("/extract-text")
+@router.post("/extract-text-gemini")
 async def extract_text(file: UploadFile = File(...)):
     if file.content_type not in ["image/png", "image/jpeg", "image/jpg"]:
         raise HTTPException(status_code=400, detail="Invalid file type. Upload a PNG or JPEG image.")
@@ -190,33 +195,43 @@ async def extract_text(file: UploadFile = File(...)):
     enhanced_text = chain.invoke({"raw_text": raw_text})
     return {"raw_text": raw_text, "enhanced_text": enhanced_text}
 
-@router.post("/extract-text-llm")
-async def extract_text_from_image(image_file: UploadFile):
-    try:
-        # Read the uploaded image file
-        image = Image.open(BytesIO(await image_file.read()))
-        
-        # Step 1: Convert image to raw base64 encoding (or provide the raw image bytes)
-        image_bytes = BytesIO()
-        image.save(image_bytes, format='PNG')
-        image_bytes.seek(0)
-        image_data = image_bytes.read()
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=GEMINI_API_KEY)
 
-        # Step 2: Create a prompt to extract text using LLM
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are a text extraction assistant specializing in extracting text from images."),
-            ("human", "I will provide you an image. Extract the text content in the image as cleanly as possible."),
-            ("human", "Here is the image: [Image data: {image_data}]")
-        ])
 
-        # Step 3: Invoke the LLM with the image data
-        output_parser = StrOutputParser()
-        chain = prompt | llm | output_parser
-        extracted_text = chain.invoke({"image_data": image_data})
+# @router.post("/extract-text-openai")
+# async def extract_text_from_image(image_file: UploadFile):
+#     try:
+#         # Step 1: Read the uploaded image file
+#         image = Image.open(BytesIO(await image_file.read()))
 
-        # Return the extracted text
-        return {"extracted_text": extracted_text}
+#         # Step 2: Extract text using Tesseract OCR
+#         text = pytesseract.image_to_string(image)
+#         if not extracted_text.strip():
+#             raise HTTPException(status_code=400, detail="No text detected in the image.")
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error extracting text from image: {str(e)}")
+#         # Step 3: Define the ChatPromptTemplate
+#         system_message = SystemMessagePromptTemplate.from_template(
+#             "You are a helpful assistant specializing in organizing and cleaning up text extracted from images."
+#         )
+#         human_message = HumanMessagePromptTemplate.from_template(
+#             "The following text was extracted from an image:\n\n{text}\n\n"
+#             "Please clean and organize the text, making it readable and well-structured."
+#         )
+
+#         prompt_template = ChatPromptTemplate.from_messages([system_message, human_message])
+
+#         # Initialize the OpenAI chat model
+#         llm = ChatOpenAI(
+#             model="gpt-3.5-turbo",
+#             temperature=0.3,
+#             openai_api_key=OPENAI_API_KEY
+#         )
+#         output_parser = StrOutputParser()
+#         # Create the LangChain LLM chain
+#         chain = prompt_template | llm | output_parser
+
+#         # Step 4: Process the extracted text through LangChain
+#         enhanced_text = chain.invoke({"raw_text": text})
+#         return {"raw_text": text, "enhanced_text": enhanced_text}
+
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error extracting text from image: {str(e)}")

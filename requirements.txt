@@ -22,3 +22,7 @@ pytesseract
 pillow
 faiss-cpu
 langchain-community
+openai
+nltk
+opencv-python-headless
+gradio
